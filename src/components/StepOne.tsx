@@ -1,8 +1,23 @@
 import React, { useState, FormEvent } from 'react'
 
+type Story = {
+    text: {
+        value: string
+    }
+}
+
 const StepOne = ({ onNext }) => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [stories, setStories] = useState<Story[]>([])
+
+    function formDataToJson(formData) {
+        let object = {};
+        for (let [key, value] of formData.entries()) {
+            object[key] = value;
+        }
+        return JSON.stringify(object);
+    }
 
     async function onSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -12,10 +27,10 @@ const StepOne = ({ onNext }) => {
             const formData = new FormData(event.currentTarget)
             const response = await fetch('/api/submit', {
                 method: 'POST',
-                body: formData,
+                body: formDataToJson(formData),
             })
-            const data = response.json()
-            console.log(data)
+            const data = await response.json()
+            setStories(data.body)
         } catch (error) {
             console.error(error)
         } finally {
@@ -77,7 +92,7 @@ const StepOne = ({ onNext }) => {
 
                     {/* Duration of campaign */}
                     <div className="mb-4">
-                        <label htmlFor="internetAccess" className="block text-gray-700 text-sm font-bold mb-2">
+                        <label htmlFor="campaignDuration" className="block text-gray-700 text-sm font-bold mb-2">
                             Expected duration of the campaign (in weeks)
                         </label>
                         <input type="number" name="campaignDuration" placeholder="Example: 4" id="campaignDuration" className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" />
@@ -85,7 +100,7 @@ const StepOne = ({ onNext }) => {
 
                     {/* Frequency of campaign */}
                     <div className="mb-4">
-                        <label htmlFor="internetAccess" className="block text-gray-700 text-sm font-bold mb-2">
+                        <label htmlFor="campaignFrequency" className="block text-gray-700 text-sm font-bold mb-2">
                             Expected frequency that you expect youth to participate in this campaign (hours/week)
                         </label>
                         <input type="number" name="campaignFrequency" placeholder="Example: 1" id="campaignFrequency" className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500" />
@@ -242,6 +257,9 @@ const StepOne = ({ onNext }) => {
                         {isLoading ? 'Loading...' : 'Generate Adventure'}
                     </button>
                 </form>
+            </div>
+            <div className="container mx-auto p-5 bg-white shadow-md rounded ">
+                { stories.map(story => (<div>{story.text.value}</div>)) }
             </div>
         </div>
     );
