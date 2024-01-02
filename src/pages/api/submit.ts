@@ -1,3 +1,18 @@
+/** Comment from John:
+
+I suggest using the 'system' and 'agent' capabilities of the OpenAI API before passing on the 'user' text.
+
+So, for the 'system,' I would set the role and personality/tone the AI will generate.
+
+For 'agent,' I have it repeat back a promise in the form of "I will do X ..." -- this seems to generate better responses for me.
+
+And then for 'user,' you can include rest of the text in the prompt.
+
+I also suggest adding a temperature slider in the form to provide more experimental wriggle room for the AI to express "creative" ideas.
+
+*/
+
+
 import type { NextApiRequest, NextApiResponse } from 'next'
 import OpenAI from "openai"
 
