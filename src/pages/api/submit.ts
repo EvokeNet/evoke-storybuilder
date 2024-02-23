@@ -1,9 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import OpenAI from "openai";
 
-import type { NextApiRequest, NextApiResponse } from "next";
-import OpenAI from "openai";
-
 type Data = {
   body: string | any;
 };
