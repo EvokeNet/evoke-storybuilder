@@ -1,28 +1,28 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
-import OpenAI from "openai"
+import type { NextApiRequest, NextApiResponse } from "next";
+import OpenAI from "openai";
 
 type Data = {
-  body: string | any
-}
+  body: string | any;
+};
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 async function checkThreadStatus(thread, run) {
-  const runStatus = await client.beta.threads.runs.retrieve(
-    thread.id,
-    run.id
-  );
-  return runStatus.status === 'completed' ? true : checkThreadStatus(thread, run)
+  const runStatus = await client.beta.threads.runs.retrieve(thread.id, run.id);
+  return runStatus.status === "completed"
+    ? true
+    : checkThreadStatus(thread, run);
 }
 
-const callAssistant = async form => {
-  const assistant = await client.beta.assistants.retrieve(process.env.OPENAI_ASSISTANT_ID as any)
-  const thread = await client.beta.threads.create()
+const callAssistant = async (form) => {
+  const assistant = await client.beta.assistants.retrieve(
+    process.env.OPENAI_ASSISTANT_ID as any
+  );
+  const thread = await client.beta.threads.create();
 
-  const prompt =
-    `
+  const prompt = `
     Relax, take a breathe and let's create a beautiful story.
     
     Make sure it has our pedagogical model and skills framework as a base structure.
@@ -37,38 +37,30 @@ const callAssistant = async form => {
 
     The theme for this story will be ${form.grandChallenge} and everything mus be aligned to it.
 
-    `
+    `;
 
-    const message = await client.beta.threads.messages.create(
-      thread.id,
-      {
-        role: "user",
-        content: prompt
-      }
-    );
+  const message = await client.beta.threads.messages.create(thread.id, {
+    role: "user",
+    content: prompt,
+  });
 
-    const run = await client.beta.threads.runs.create(
-      thread.id,
-      { 
-        assistant_id: assistant.id,
-        instructions: "Please address the user as a partner, with respect, cordiality and good humor."
-      }
-    );
+  const run = await client.beta.threads.runs.create(thread.id, {
+    assistant_id: assistant.id,
+    instructions:
+      "Please address the user as a partner, with respect, cordiality and good humor.",
+  });
 
-    await checkThreadStatus(thread, run)
+  await checkThreadStatus(thread, run);
 
-    const messages : any = await client.beta.threads.messages.list(
-      thread.id
-    );
+  const messages: any = await client.beta.threads.messages.list(thread.id);
 
-    return messages.body.data[0].content
-
-}
+  return messages.body.data[0].content;
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data>
 ) {
-    const response = await callAssistant(JSON.parse(req.body))
-    res.status(200).json({ body: response })
+  const response = await callAssistant(JSON.parse(req.body));
+  res.status(200).json({ body: response });
 }
