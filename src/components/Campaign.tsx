@@ -14,17 +14,17 @@ const Campaign = ({
     <div className="block rounded-lg p-4 shadow-sm shadow-indigo-100 mx-2 my-1">
       <img
         alt="Home"
-        src={image}
+        src="https://source.unsplash.com/1600x900/?nature&auto=format&fit=crop&w=1770&q=80"
         className="h-56 w-full rounded-md object-cover"
       />
 
       <div className="mt-2">
         <dl>
           <div>
-            <dt className="sr-only">{KnowlegeAreasData[knowledgeArea].name}</dt>
+            {/* <dt className="sr-only">{KnowlegeAreasData[knowledgeArea].name}</dt>
             <dd className="text-sm text-gray-500">
               {KnowlegeAreasData[knowledgeArea].name}
-            </dd>
+            </dd> */}
           </div>
 
           <div>
@@ -35,14 +35,14 @@ const Campaign = ({
       </div>
 
       <div className="mt-2">
-        {tags.map((tag, index) => (
+        {/* {tags.map((tag, index) => (
           <span
             key={index}
             className="whitespace-nowrap rounded-full bg-purple-100 px-2.5 py-0.5 text-sm text-purple-700 mr-1"
           >
             {tag}
           </span>
-        ))}
+        ))} */}
       </div>
 
       <div className="mt-2 border-t">

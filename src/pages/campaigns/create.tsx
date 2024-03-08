@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import React, { useState, FormEvent } from "react";
+import { useRouter } from "next/router";
 
 type Story = {
   text: {
@@ -8,13 +9,21 @@ type Story = {
 };
 
 const NewCampaign = () => {
+  const router = useRouter();
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [stories, setStories] = useState<Story[]>([]);
 
   function formDataToJson(formData) {
     let object = {};
+    let lastKey = "";
     for (let [key, value] of formData.entries()) {
-      object[key] = value;
+      if (lastKey == key) {
+        object[key] += ", " + value;
+      } else {
+        object[key] = value;
+      }
+      lastKey = key;
     }
     return JSON.stringify(object);
   }
@@ -25,12 +34,12 @@ const NewCampaign = () => {
 
     try {
       const formData = new FormData(event.currentTarget);
-      const response = await fetch("/api/submit", {
+      const response = await fetch("/api/create_campaign", {
         method: "POST",
         body: formDataToJson(formData),
       });
       const data = await response.json();
-      setStories(data.body);
+      router.push(`/campaigns/`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -96,14 +105,14 @@ const NewCampaign = () => {
             {/* Devices */}
             <div className="mb-4">
               <label
-                htmlFor="internetAccess"
+                htmlFor="deviceAccess"
                 className="block text-gray-700 text-sm font-bold mb-2"
               >
                 Devices that will be used
               </label>
               <select
-                name="internetAccess"
-                id="internetAccess"
+                name="deviceAccess"
+                id="deviceAccess"
                 className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               >
                 <option>No access to devices</option>
@@ -129,6 +138,7 @@ const NewCampaign = () => {
                 type="number"
                 name="campaignDuration"
                 placeholder="Example: 4"
+                defaultValue={1}
                 id="campaignDuration"
                 className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               />
@@ -147,6 +157,7 @@ const NewCampaign = () => {
                 type="number"
                 name="campaignFrequency"
                 placeholder="Example: 1"
+                defaultValue={1}
                 id="campaignFrequency"
                 className="block appearance-none w-full border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
               />
@@ -173,6 +184,48 @@ const NewCampaign = () => {
                 <option>Peace, Justice and Strong Institutions</option>
               </select>
             </div>
+
+            {/* Skills */}
+            <div className="mb-4">
+              <label
+                htmlFor="skills"
+                className="block text-gray-700 text-sm font-bold mb-2"
+              >
+                What Skills do you wish to include in your campaign?
+              </label>
+              <select
+                name="skills"
+                id="skills"
+                multiple
+                size={20}
+                className="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+              >
+                <optgroup className="font-bold" label="Creative Visionary">
+                  <option>Imagination</option>
+                  <option>Ideation</option>
+                  <option>Vision</option>
+                  <option>Courage</option>
+                </optgroup>
+                <optgroup className="font-bold" label="Deep Collaborator">
+                  <option>Communication</option>
+                  <option>Teamwork</option>
+                  <option>Networking</option>
+                  <option>Generosity of Spirit</option>
+                </optgroup>
+                <optgroup className="font-bold" label="Systems Thinker">
+                  <option>Problem Solving</option>
+                  <option>Analysis</option>
+                  <option>Aggregation</option>
+                  <option>Critical Reflection</option>
+                </optgroup>
+                <optgroup className="font-bold" label="Deep Collaborator">
+                  <option>Leadership</option>
+                  <option>Empathy</option>
+                  <option>Transformation</option>
+                  <option>Curiosity</option>
+                </optgroup>
+              </select>
+            </div>
           </fieldset>
 
           <button
@@ -186,7 +239,7 @@ const NewCampaign = () => {
       </div>
       <div className="container mx-auto p-5">
         {stories.map((story) => (
-          <div>{story.text.value}</div>
+          <div dangerouslySetInnerHTML={{ __html: story.text.value }}></div>
         ))}
       </div>
     </>

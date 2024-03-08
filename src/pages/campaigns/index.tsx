@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { PrismaClient } from "@prisma/client";
 
 import Header from "@/components/Header";
 import Campaign from "@/components/Campaign";
@@ -7,6 +8,8 @@ import Link from "next/link";
 import campaignData from "@/data/CampaignsData";
 import knowledgeAreasData from "@/data/KnowlegeAreasData";
 import competenceAreasData from "@/data/CompetenceAreasData";
+
+const prisma = new PrismaClient();
 
 const CAMPAIGNS_PER_PAGE = 8;
 
@@ -24,11 +27,19 @@ export default function Campaigns() {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
   const pageCount = 0;
 
+  const fetchCampaigns = async () => {
+    const response = await fetch("/api/campaigns");
+    const data = await response.json();
+    setCampaigns(data);
+  };
+
   useEffect(() => {
     const indexOfLastCampaign = currentPage * CAMPAIGNS_PER_PAGE;
     const indexOfFirstCampaign = indexOfLastCampaign - CAMPAIGNS_PER_PAGE;
 
-    const campaignsFiltered = campaignData.filter(
+    fetchCampaigns();
+
+    const campaignsFiltered = campaigns.filter(
       (campaign) =>
         (campaign.title.toLowerCase().includes(filters.filter.toLowerCase()) ||
           campaign.tags.some((tag) =>
@@ -126,7 +137,7 @@ export default function Campaigns() {
           <div className="self-end py-6 sm:px-6 lg:px-8">
             <Link
               className="block rounded-md bg-buttons px-5 py-2.5 text-sm font-medium text-white transition hover:bg-teal-700"
-              href="/campaigns/new"
+              href="/campaigns/create"
             >
               New Campaign
             </Link>
@@ -137,16 +148,16 @@ export default function Campaigns() {
         {campaigns.length >= 1 ? (
           <>
             <div className="container mx-auto grid grid-cols-4 gap-4 sm:grid-cols-2 md:grid-cols-4">
-              {campaigns.map((plan, index) => (
+              {campaigns.map((campaign, index) => (
                 <Campaign
                   key={index}
-                  id={plan.id}
+                  id={campaign.id}
                   competenceArea={{}}
-                  title={plan.title}
-                  description={plan.description}
-                  tags={plan.tags}
-                  image={plan.image}
-                  knowledgeArea={plan.knowledgeArea}
+                  title={campaign.title}
+                  description={campaign.excerpt}
+                  tags={campaign.tags}
+                  image={campaign.image}
+                  knowledgeArea={campaign.knowledgeArea}
                 />
               ))}
             </div>
@@ -170,7 +181,7 @@ export default function Campaigns() {
           </>
         ) : (
           <div className="flex h-full w-full items-center justify-center text-gray-400">
-            Não há planos que correspondam à sua busca
+            There are no campaigns available.
           </div>
         )}
       </main>
