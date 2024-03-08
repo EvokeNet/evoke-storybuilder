@@ -144,7 +144,7 @@ export default function Campaigns() {
           </div>
         </div>
 
-        {/* Lesson plans */}
+        {/* Campaigns */}
         {campaigns.length >= 1 ? (
           <>
             <div className="container mx-auto grid grid-cols-4 gap-4 sm:grid-cols-2 md:grid-cols-4">

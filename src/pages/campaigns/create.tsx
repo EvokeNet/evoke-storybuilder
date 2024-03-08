@@ -12,7 +12,6 @@ const NewCampaign = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [stories, setStories] = useState<Story[]>([]);
 
   function formDataToJson(formData) {
     let object = {};
@@ -236,11 +235,6 @@ const NewCampaign = () => {
             {isLoading ? "Loading..." : "Generate Adventure"}
           </button>
         </form>
-      </div>
-      <div className="container mx-auto p-5">
-        {stories.map((story) => (
-          <div dangerouslySetInnerHTML={{ __html: story.text.value }}></div>
-        ))}
       </div>
     </>
   );

@@ -46,12 +46,7 @@ const Campaign = ({
       </div>
 
       <div className="mt-2 border-t">
-        <Link
-          href={`/campaigns/${id}?title=${title}&description=${description}&image=${encodeURIComponent(
-            image
-          )}`}
-          as={`/campaigns/${id}`}
-        >
+        <Link href={`/campaigns/${id}`}>
           <button className="block rounded-md bg-buttons px-2 py-2 mt-2 text-sm font-medium text-white transition hover:bg-teal-700">
             Open campaign
           </button>

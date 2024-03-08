@@ -83,13 +83,25 @@ export default async function handler(
   const response = await callAssistant(JSON.parse(req.body));
   const campaign = JSON.parse(response[0].text.value);
 
-  // Save data to the Database
+  // Save campaign to the Database
   const newCampaign = await prisma.campaign.create({
     data: {
       title: campaign.title,
       excerpt: campaign.excerpt,
-      content: campaign.content,
       isPublished: true,
+    },
+  });
+
+  // Save pedagogical document to database
+  const document = await prisma.document.create({
+    data: {
+      title: "Pedagogical Plan",
+      content: campaign.content,
+      campaign: {
+        connect: {
+          id: newCampaign.id,
+        },
+      },
     },
   });
 
