@@ -53,9 +53,17 @@ export default function SingleCampaign() {
 
         <section className="container mx-auto bg-white">
           <div className="container">
-            <h2 className="text-3xl font-bold text-gray-800 sm:text-3xl md:text3xl py-8">
-              Pedagogical documents
-            </h2>
+            <div className="flex flex-column items-center">
+              <h2 className="text-3xl font-bold text-gray-800 sm:text-3xl md:text3xl py-8">
+                Pedagogical documents
+              </h2>
+              <Link
+                href={`/campaigns/${router.query.id}/create_document`}
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-buttons rounded-md"
+              >
+                New document
+              </Link>
+            </div>
             <hr noshade />
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {documents &&
@@ -74,15 +82,15 @@ export default function SingleCampaign() {
 
         <section className="container mx-auto bg-white">
           <div className="container">
-            <div className="flex flex-row place-items-stretch items-end">
+            <div className="flex flex-column items-center">
               <h2 className="text-3xl font-bold text-gray-800 sm:text-3xl md:text3xl py-8">
                 Story parts
               </h2>
               <Link
                 href={`/campaigns/${router.query.id}/create_story`}
-                className="flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-buttons rounded-md"
+                className="ml-auto px-4 py-2 text-sm font-medium text-white bg-buttons rounded-md"
               >
-                New Story
+                New story
               </Link>
             </div>
 
