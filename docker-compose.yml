@@ -7,6 +7,8 @@ networks:
 services:
   evokegen-app:
     image: evokegen:latest
+    depends_on:
+      - evokegen-db
     networks:
       - web
 
@@ -14,6 +16,8 @@ services:
     image: postgres:latest
     networks:
       - web
+    ports:
+      - "5432:5432"
     environment:
       - POSTGRES_USER=evokegen
       - POSTGRES_PASSWORD=rcZHiYtysbu8DIZpRGhvb0Te4yChM
