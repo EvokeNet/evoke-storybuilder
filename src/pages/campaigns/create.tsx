@@ -2,12 +2,6 @@ import Header from "@/components/Header";
 import React, { useState, FormEvent } from "react";
 import { useRouter } from "next/router";
 
-type Story = {
-  text: {
-    value: string;
-  };
-};
-
 const NewCampaign = () => {
   const router = useRouter();
 

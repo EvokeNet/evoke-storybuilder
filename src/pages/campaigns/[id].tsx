@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import Document from "@/components/Document";
+import Story from "@/components/Story";
 import Link from "next/link";
 
 export default function SingleCampaign() {
@@ -25,9 +26,16 @@ export default function SingleCampaign() {
     setDocuments(data);
   };
 
+  const fetchStories = async () => {
+    const response = await fetch("/api/stories?campaignId=" + router.query.id);
+    const data = await response.json();
+    setStories(data);
+  };
+
   useEffect(() => {
     fetchCampaign();
     fetchDocuments();
+    fetchStories();
   }, []);
 
   if (!campaign) return <>Loading...</>;
@@ -99,9 +107,10 @@ export default function SingleCampaign() {
             <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {stories &&
                 stories.map((story, index) => (
-                  <Document
+                  <Story
                     key={index}
-                    id={story.id}
+                    storyId={story.id}
+                    campaignId={story.campaignId}
                     title={story.title}
                     image="https://source.unsplash.com/1600x900/?nature&auto=format&fit=crop&w=1770&q=80"
                   />
