@@ -37,6 +37,9 @@ jobs:
       - name: Prisma generate
         run: yarn prisma generate
 
+      - name: Prisma migrate
+        run: yarn prisma migrate deploy
+
       - name: Build
         run: yarn build
 
