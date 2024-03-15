@@ -9,8 +9,6 @@ RUN adduser --system --uid 1001 nextjs
 
 COPY --chown=nextjs:nodejs . .
 
-COPY prisma ./prisma/
-
 USER nextjs
 
 EXPOSE 3000
