@@ -35,13 +35,9 @@ jobs:
         run: yarn install
 
       - name: Prisma generate
-        run: yarn prisma generate
-
-      - name: Prisma migrate
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy
-
+        run: yarn prisma migrate deploy
 
       - name: Build
         run: yarn build
