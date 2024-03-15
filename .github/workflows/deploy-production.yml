@@ -37,6 +37,12 @@ jobs:
       - name: Prisma generate
         run: yarn prisma generate
 
+      - name: Prisma migrate
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: npx prisma migrate deploy
+
+
       - name: Build
         run: yarn build
 
@@ -86,7 +92,7 @@ jobs:
           source: "Dockerfile,docker-compose.yml"
           target: "/var/docker/evokegen/"
 
-      - name: executing remote ssh commands using ssh key
+      - name: Executing remote ssh commands using ssh key
         uses: appleboy/ssh-action@v0.1.8
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
@@ -96,8 +102,3 @@ jobs:
             cd /var/docker/evokegen/
             sudo docker build -t evokegen .
             sudo docker-compose up -d
-
-      - name: Prisma migrate
-        run: yarn prisma migrate deploy
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
