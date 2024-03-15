@@ -1,0 +1,99 @@
+name: Build and deploy from main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Deploy to server from main
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL }}
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_ASSISTANT_ID: ${{ secrets.OPENAI_ASSISTANT_ID }}
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v1
+        with:
+          persist-credentials: false
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+
+      - name: Install yarn
+        uses: mskelton/setup-yarn@v1
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Prisma generate
+        run: yarn prisma generate
+
+      - name: Build
+        run: yarn build
+
+      - name: Copy public folder
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: "./public"
+          target: "/var/docker/evokegen/"
+
+      - name: Copy standalone folder
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: "./.next/standalone/"
+          target: "/var/docker/evokegen/"
+
+      - name: CP standalone to ./
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            sudo cp -R /var/docker/evokegen/.next/standalone/.next/* /var/docker/evokegen/.next/
+            sudo cp -R /var/docker/evokegen/.next/standalone/* /var/docker/evokegen/
+            
+      - name: Copy static folder
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: "./.next/static"
+          target: "/var/docker/evokegen/"
+
+      - name: Copy Dockerfile
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          source: "Dockerfile,docker-compose.yml"
+          target: "/var/docker/evokegen/"
+
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            cd /var/docker/evokegen/
+            sudo docker build -t evokegen .
+            sudo docker-compose up -d
+

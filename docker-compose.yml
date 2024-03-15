@@ -1,0 +1,34 @@
+version: "3"
+
+networks:
+  web:
+    external: true
+
+services:
+  evokegen-app:
+    image: evokegen:latest
+    networks:
+      - web
+
+  evokegen-db:
+    image: postgres:latest
+    networks:
+      - web
+    environment:
+      - POSTGRES_USER=evokegen
+      - POSTGRES_PASSWORD=rcZHiYtysbu8DIZpRGhvb0Te4yChM
+      - POSTGRES_DB=evokegen
+
+  nginx-proxy-manager:
+    image: jlesage/nginx-proxy-manager:latest
+    ports:
+      - 80:80
+      - 81:81
+      - 443:443
+      - 444:444
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+      - ./nginx-proxy-manager:/config
+    networks:
+      - web
