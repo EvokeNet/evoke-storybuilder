@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { Attributes, ClassAttributes, useEffect, useState } from "react";
+import parse, { attributesToProps } from "html-react-parser";
 
 import Header from "@/components/Header";
 
@@ -12,6 +13,18 @@ export default function SingleDocument() {
     const response = await fetch("/api/document?id=" + router.query.documentId);
     const data = await response.json();
     setDocument(data);
+  };
+
+  const options = {
+    replace(domNode: any) {
+      if (domNode.name === "h1") {
+        const attribs: Attributes = {
+          key: "text-3xl font-bold text-white sm:text-4xl md:text-6xl",
+        };
+        const props = attributesToProps(attribs);
+        return <div {...props} />;
+      }
+    },
   };
 
   useEffect(() => {
@@ -28,7 +41,7 @@ export default function SingleDocument() {
           className="mx-auto mt-8 max-w-prose text-base leading-relaxed"
           id="theme"
         >
-          {document.content}
+          {parse(document.content, options)}
         </section>
       </main>
     </>

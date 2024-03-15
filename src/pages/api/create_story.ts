@@ -25,7 +25,7 @@ async function checkThreadStatus(thread, run) {
 }
 
 // Main function to call the assistant and generate content based on the provided form
-const callAssistant = async (form, configs) => {
+const callAssistant = async (form, lastStory) => {
   // Retrieve the assistant configuration using the assistant ID
   const assistant = await client.beta.assistants.retrieve(
     process.env.OPENAI_ASSISTANT_ID as any
@@ -35,22 +35,23 @@ const callAssistant = async (form, configs) => {
 
   // Construct the prompt with dynamic content based on the input form
   const prompt = `
-    Relax, take a deep breathe and let's write an amazing story, in 4 paragraphs.
+    Relax, take a deep breathe and let's write a simulation of a few minutes, in 4 paragraphs.
     ${
-      configs
-        ? `Last time, we wrote: ${configs}, so continue from here.`
-        : "This is the introduction of the story, so it needs to be exciting and leave a cliffhanger to the next part."
+      lastStory
+        ? `Last time, we wrote: ${lastStory}, so continue from here.`
+        : "This is the introduction of the simulation, so it needs to be exciting and leave a cliffhanger to the next part."
     }
-    The world of the story is ${form.storyWorld}. It is a ${
+    The world of the simulation is ${form.storyWorld}. It is a ${
     form.storyGenre
   } story.
-    This story should revolve around the theme of ${
+    This simulation should revolve around the theme of ${
       form.storyGrandChallenge
     }, always following the 7-part story arch. Also, make sure to include the Hero's Journey as a structure for the story.
-    During the development of the story, the main character will face the following challenges: ${
+    During the development of the simulation, the main character will face the following challenges: ${
       form.storyThreats
     }.
-    Be sure to add dialogues and interactions between the characters to make the story engaging.
+    The simulation should not be super broad, it should focus on a specific topic at a time, displaying a slow pace of development. Also, make sure to describe character's actions and dialogs with detail.
+    **Importat: never end the story. Always leave a cliffhanger for the next part.
     **Important: always return content in JSON in a single line following the structure {"title": "The title of the story", "content": "The content of the story in pure text with no line breaks or /n"}.
     **Important: never add any other text to the response or describe your actions.
     `;

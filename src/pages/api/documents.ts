@@ -12,8 +12,6 @@ export default async function handler(
     },
   });
 
-  console.log(documents);
-
   if (!documents)
     res
       .status(400)
